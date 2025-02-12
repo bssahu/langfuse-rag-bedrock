@@ -24,7 +24,7 @@ A Retrieval-Augmented Generation (RAG) chatbot built with FastAPI, AWS Bedrock, 
 
 ```bash
 git clone [https://github.com/bssahu/langfuse-rag-bedrock](https://github.com/bssahu/langfuse-rag-bedrock.git
-cd rag-chatbot
+cd langfuse-rag-bedrock
 ```
 
 2. Copy the example environment file and update with your credentials:
