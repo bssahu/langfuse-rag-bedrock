@@ -1,4 +1,4 @@
-# RAG Chatbot with AWS Bedrock and Qdrant
+# RAG Chatbot with AWS Bedrock and Qdrant with Langfuse for observability
 
 A Retrieval-Augmented Generation (RAG) chatbot built with FastAPI, AWS Bedrock, and Qdrant vector database. The system processes PDF documents and uses them to provide context-aware responses using Claude.
 
@@ -23,7 +23,7 @@ A Retrieval-Augmented Generation (RAG) chatbot built with FastAPI, AWS Bedrock, 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/rag-chatbot.git
+git clone [https://github.com/bssahu/rag-chatbot](https://github.com/bssahu/langfuse-rag-bedrock.git
 cd rag-chatbot
 ```
 
@@ -147,7 +147,9 @@ logging.basicConfig(
 
 ## License
 
+
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
 
 ## Support
 
