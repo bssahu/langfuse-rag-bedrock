@@ -61,10 +61,11 @@ class RAGService:
         
         # Configure retriever with search parameters
         self.retriever = self.vector_store.as_retriever(
-            search_type="similarity",
+            search_type="similarity_score_threshold",
             search_kwargs={
                 "k": settings.SEARCH_TOP_K,
-                "score_threshold": settings.SEARCH_SCORE_THRESHOLD,
+                "score_threshold": 0.0,  # Start with no threshold to see all matches
+                "filter": None  # No filtering initially
             }
         )
         
@@ -118,17 +119,32 @@ class RAGService:
             chat_history = []
             
         try:
+            # Log the query for debugging
+            logger.info(f"Processing query: {message}")
+            
+            # Get embeddings for the query to verify
+            query_embedding = await self.embeddings.aembed_query(message)
+            logger.info(f"Query embedding size: {len(query_embedding)}")
+
+            # Get relevant documents directly first for debugging
+            relevant_docs = await self.retriever.aget_relevant_documents(message)
+            logger.info(f"Retrieved {len(relevant_docs)} documents directly from retriever")
+            for i, doc in enumerate(relevant_docs):
+                logger.info(f"Document {i+1}: {doc.metadata.get('source', 'unknown')}")
+                logger.info(f"Content preview: {doc.page_content[:100]}...")
+
+            # Now proceed with the conversation chain
             response = await self.conversation_chain.ainvoke({
                 "question": message,
                 "chat_history": chat_history
             })
             
-            # Include similarity scores in the response
             sources_with_scores = [
                 {
                     "source": doc.metadata["source"],
                     "page": doc.metadata.get("page", 1),
-                    "content": doc.page_content[:200] + "..."
+                    "content": doc.page_content[:200] + "...",
+                    "score": getattr(doc, "score", None)  # Include score if available
                 }
                 for doc in response["source_documents"]
             ]
@@ -136,7 +152,8 @@ class RAGService:
             return {
                 "status": "success",
                 "response": response["answer"],
-                "sources": sources_with_scores
+                "sources": sources_with_scores,
+                "embedding_size": len(query_embedding)  # Include embedding size for verification
             }
         except Exception as e:
             logger.error(f"Error processing chat message: {str(e)}")
